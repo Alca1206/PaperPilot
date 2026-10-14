@@ -1,0 +1,36 @@
+# ---------- Virtual environments ----------
+.venv/
+venv/
+env/
+
+# ---------- Python caches & tooling ----------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------- PaperPilot local data ----------
+# Uploaded papers, ChromaDB vector store, generated summaries/references
+data/
+
+# ---------- Secrets ----------
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# ---------- Local model data (normally lives in ~/.ollama, but just in case) ----------
+.ollama/
+
+# ---------- Jupyter ----------
+.ipynb_checkpoints/
+
+# ---------- Editors & OS ----------
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
