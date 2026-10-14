@@ -1,0 +1,8 @@
+# PaperPilot dependencies
+# Install with: python -m pip install -r requirements.txt
+
+# --- Phase 1: Foundation ---
+streamlit>=1.40,<2.0      # Web UI framework
+ollama>=0.4,<1.0          # Official Python client for the local Ollama server
+pytest>=8.0               # Test runner
+
