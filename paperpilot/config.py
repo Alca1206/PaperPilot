@@ -32,6 +32,10 @@ DEFAULT_EMBED_USE_PREFIXES = True
 DEFAULT_QA_TOP_K = 4
 DEFAULT_QA_MIN_SCORE = 0.35
 DEFAULT_CHAT_TEMPERATURE = 0.1
+DEFAULT_SUMMARY_NUM_CTX = 16384
+DEFAULT_SUMMARY_DIRECT_LIMIT_TOKENS = 9000
+DEFAULT_SUMMARY_PAGES_PER_GROUP = 4
+DEFAULT_SUMMARY_MAX_ATTEMPTS = 3
 
 _TRUE_VALUES = {"1", "true", "yes", "on"}
 _FALSE_VALUES = {"0", "false", "no", "off"}
@@ -56,6 +60,11 @@ class Settings:
     # Gate 1: if the best chunk scores below this, answer "not found" without the LLM.
     qa_min_score: float = DEFAULT_QA_MIN_SCORE
     chat_temperature: float = DEFAULT_CHAT_TEMPERATURE
+    # Summaries: Ollama's default context window is small and overflow is SILENTLY cut off.
+    summary_num_ctx: int = DEFAULT_SUMMARY_NUM_CTX
+    summary_direct_limit_tokens: int = DEFAULT_SUMMARY_DIRECT_LIMIT_TOKENS
+    summary_pages_per_group: int = DEFAULT_SUMMARY_PAGES_PER_GROUP
+    summary_max_attempts: int = DEFAULT_SUMMARY_MAX_ATTEMPTS
 
     def __post_init__(self) -> None:
         if not self.ollama_host.startswith(("http://", "https://")):
@@ -91,6 +100,22 @@ class Settings:
         if not 0.0 <= self.chat_temperature <= 2.0:
             raise ValueError(
                 f"chat_temperature must be between 0 and 2, got {self.chat_temperature}"
+            )
+        if self.summary_num_ctx < 2048:
+            raise ValueError(f"summary_num_ctx must be at least 2048, got {self.summary_num_ctx}")
+        if not 0 < self.summary_direct_limit_tokens < self.summary_num_ctx:
+            raise ValueError(
+                "summary_direct_limit_tokens must be above 0 and below summary_num_ctx "
+                "(room is needed for instructions and the answer), "
+                f"got {self.summary_direct_limit_tokens} with num_ctx {self.summary_num_ctx}"
+            )
+        if self.summary_pages_per_group < 1:
+            raise ValueError(
+                f"summary_pages_per_group must be at least 1, got {self.summary_pages_per_group}"
+            )
+        if self.summary_max_attempts < 1:
+            raise ValueError(
+                f"summary_max_attempts must be at least 1, got {self.summary_max_attempts}"
             )
 
     # Storage locations are derived from data_dir so they can never drift apart.
@@ -179,4 +204,12 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
         qa_top_k=get_number("QA_TOP_K", DEFAULT_QA_TOP_K, int),
         qa_min_score=get_number("QA_MIN_SCORE", DEFAULT_QA_MIN_SCORE, float),
         chat_temperature=get_number("CHAT_TEMPERATURE", DEFAULT_CHAT_TEMPERATURE, float),
+        summary_num_ctx=get_number("SUMMARY_NUM_CTX", DEFAULT_SUMMARY_NUM_CTX, int),
+        summary_direct_limit_tokens=get_number(
+            "SUMMARY_DIRECT_LIMIT_TOKENS", DEFAULT_SUMMARY_DIRECT_LIMIT_TOKENS, int
+        ),
+        summary_pages_per_group=get_number(
+            "SUMMARY_PAGES_PER_GROUP", DEFAULT_SUMMARY_PAGES_PER_GROUP, int
+        ),
+        summary_max_attempts=get_number("SUMMARY_MAX_ATTEMPTS", DEFAULT_SUMMARY_MAX_ATTEMPTS, int),
     )
