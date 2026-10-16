@@ -47,13 +47,14 @@ def chunk_table_rows(chunks: list[Chunk], preview_chars: int = 120) -> list[dict
     ]
 
 
-def render_paper_tab(settings: Settings, embedding_model_ready: bool) -> None:
+def render_paper_tab(settings: Settings, embedding_model_ready: bool) -> ExtractedDocument | None:
+    """Draw the Paper tab. Returns the selected, successfully read paper (or None)."""
     uploaded_files = st.file_uploader(
         "Upload research papers (PDF)", type=["pdf"], accept_multiple_files=True
     )
     if not uploaded_files:
         st.info("Upload a PDF to get started.", icon="📄")
-        return
+        return None
 
     # Several files can be uploaded, but one paper is processed at a time.
     names = [f.name for f in uploaded_files]
@@ -70,13 +71,13 @@ def render_paper_tab(settings: Settings, embedding_model_ready: bool) -> None:
             )
     except PDFExtractionError as exc:
         st.error(str(exc))
-        return
+        return None
 
     _render_overview(document, chunks)
     _render_pages(document)
     _render_chunks(chunks, settings)
     _render_index(document, chunks, settings, embedding_model_ready)
-
+    return document
 
 def _render_overview(document: ExtractedDocument, chunks: list[Chunk]) -> None:
     st.subheader(document.metadata.get("title") or document.source_name)

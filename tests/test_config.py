@@ -169,3 +169,40 @@ def test_invalid_bool_raises_clear_error():
 def test_invalid_embedding_settings_are_rejected(kwargs):
     with pytest.raises(ValueError):
         Settings(**kwargs)
+
+# ---------- Phase 4: Q&A settings ----------
+
+
+def test_qa_setting_defaults():
+    settings = load_settings(env={})
+
+    assert settings.qa_top_k == 4
+    assert settings.qa_min_score == 0.35
+    assert settings.chat_temperature == 0.1
+
+
+def test_qa_settings_from_env():
+    settings = load_settings(
+        env={
+            "PAPERPILOT_QA_TOP_K": "6",
+            "PAPERPILOT_QA_MIN_SCORE": "0.5",
+            "PAPERPILOT_CHAT_TEMPERATURE": "0",
+        }
+    )
+
+    assert (settings.qa_top_k, settings.qa_min_score, settings.chat_temperature) == (6, 0.5, 0.0)
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"qa_top_k": 0},
+        {"qa_min_score": 1.5},
+        {"qa_min_score": -2},
+        {"chat_temperature": -0.1},
+        {"chat_temperature": 3},
+    ],
+)
+def test_invalid_qa_settings_are_rejected(kwargs):
+    with pytest.raises(ValueError):
+        Settings(**kwargs)

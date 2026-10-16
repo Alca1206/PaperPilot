@@ -29,6 +29,9 @@ DEFAULT_CHUNK_OVERLAP_SENTENCES = 1
 DEFAULT_MODEL_TIMEOUT_SECONDS = 300.0
 DEFAULT_EMBED_BATCH_SIZE = 32
 DEFAULT_EMBED_USE_PREFIXES = True
+DEFAULT_QA_TOP_K = 4
+DEFAULT_QA_MIN_SCORE = 0.35
+DEFAULT_CHAT_TEMPERATURE = 0.1
 
 _TRUE_VALUES = {"1", "true", "yes", "on"}
 _FALSE_VALUES = {"0", "false", "no", "off"}
@@ -49,6 +52,10 @@ class Settings:
     model_timeout_seconds: float = DEFAULT_MODEL_TIMEOUT_SECONDS
     embed_batch_size: int = DEFAULT_EMBED_BATCH_SIZE
     embed_use_prefixes: bool = DEFAULT_EMBED_USE_PREFIXES
+    qa_top_k: int = DEFAULT_QA_TOP_K
+    # Gate 1: if the best chunk scores below this, answer "not found" without the LLM.
+    qa_min_score: float = DEFAULT_QA_MIN_SCORE
+    chat_temperature: float = DEFAULT_CHAT_TEMPERATURE
 
     def __post_init__(self) -> None:
         if not self.ollama_host.startswith(("http://", "https://")):
@@ -77,6 +84,14 @@ class Settings:
             )
         if self.embed_batch_size < 1:
             raise ValueError(f"embed_batch_size must be at least 1, got {self.embed_batch_size}")
+        if self.qa_top_k < 1:
+            raise ValueError(f"qa_top_k must be at least 1, got {self.qa_top_k}")
+        if not -1.0 <= self.qa_min_score <= 1.0:
+            raise ValueError(f"qa_min_score must be between -1 and 1, got {self.qa_min_score}")
+        if not 0.0 <= self.chat_temperature <= 2.0:
+            raise ValueError(
+                f"chat_temperature must be between 0 and 2, got {self.chat_temperature}"
+            )
 
     # Storage locations are derived from data_dir so they can never drift apart.
     @property
@@ -161,4 +176,7 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
         ),
         embed_batch_size=get_number("EMBED_BATCH_SIZE", DEFAULT_EMBED_BATCH_SIZE, int),
         embed_use_prefixes=get_bool("EMBED_USE_PREFIXES", DEFAULT_EMBED_USE_PREFIXES),
+        qa_top_k=get_number("QA_TOP_K", DEFAULT_QA_TOP_K, int),
+        qa_min_score=get_number("QA_MIN_SCORE", DEFAULT_QA_MIN_SCORE, float),
+        chat_temperature=get_number("CHAT_TEMPERATURE", DEFAULT_CHAT_TEMPERATURE, float),
     )

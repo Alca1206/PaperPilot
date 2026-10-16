@@ -8,6 +8,7 @@ This file only wires the UI together. All logic lives in the paperpilot package.
 import streamlit as st
 
 from paperpilot.config import load_settings
+from paperpilot.ui.ask_view import render_ask_tab
 from paperpilot.ui.health_view import (
     get_health_report,
     render_health_details,
@@ -51,14 +52,14 @@ def main() -> None:
         ["📄 Paper", "📝 Summary", "💬 Ask", "📚 References", "🩺 System status"]
     )
     with paper_tab:
-        render_paper_tab(
+        document = render_paper_tab(
             settings,
             embedding_model_ready=report.is_model_available(settings.embedding_model),
         )
     with summary_tab:
         render_placeholder("Structured summaries", 5)
     with ask_tab:
-        render_placeholder("Questions with page-level citations", 4)
+        render_ask_tab(settings, document, models_ready=report.ok)
     with refs_tab:
         render_placeholder("Bibliography formatting", 6)
     with status_tab:

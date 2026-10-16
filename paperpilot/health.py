@@ -6,7 +6,7 @@ This module has no Streamlit code, so it can be tested on its own.
 from __future__ import annotations
 
 from collections.abc import Iterable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 import httpx
@@ -38,6 +38,11 @@ class HealthReport:
     def ok(self) -> bool:
         """True only when Ollama is reachable and every required model exists."""
         return self.ollama_reachable and not self.missing_models
+
+    def is_model_available(self, name: str) -> bool:
+        """True if Ollama is reachable and this required model is installed."""
+        missing = {normalize_model_name(m) for m in self.missing_models}
+        return self.ollama_reachable and normalize_model_name(name) not in missing
 
     @property
     def pull_commands(self) -> list[str]:
@@ -136,9 +141,3 @@ def check_ollama_health(
         installed_models=installed,
         missing_models=find_missing_models(required, installed),
     )
-
-
-    def is_model_available(self, name: str) -> bool:
-        """True if Ollama is reachable and this required model is installed."""
-        missing = {normalize_model_name(m) for m in self.missing_models}
-        return self.ollama_reachable and normalize_model_name(name) not in missing

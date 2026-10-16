@@ -148,3 +148,8 @@ Later: multi-paper comparison, hybrid retrieval, deployment.
 ## License
 
 See [LICENSE](LICENSE).
+
+
+| `PAPERPILOT_MODEL_TIMEOUT_SECONDS` | `300` | Timeout for embedding/chat calls (CPU can be slow) |
+| `PAPERPILOT_EMBED_BATCH_SIZE` | `32` | Chunks sent to Ollama per embedding request |
+| `PAPERPILOT_EMBED_USE_PREFIXES` | `true` | EmbeddingGemma task prefixes on queries/documents |
