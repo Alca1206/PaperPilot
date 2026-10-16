@@ -15,10 +15,8 @@ from paperpilot.ui.health_view import (
     render_health_summary,
 )
 from paperpilot.ui.paper_view import render_paper_tab
-
-
-def render_placeholder(feature: str, phase: int) -> None:
-    st.info(f"{feature} arrives in Phase {phase}.", icon="🚧")
+from paperpilot.ui.references_view import render_references_tab
+from paperpilot.ui.summary_view import render_summary_tab
 
 
 def main() -> None:
@@ -57,11 +55,19 @@ def main() -> None:
             embedding_model_ready=report.is_model_available(settings.embedding_model),
         )
     with summary_tab:
-        render_placeholder("Structured summaries", 5)
+        render_summary_tab(
+            settings,
+            document,
+            chat_model_ready=report.is_model_available(settings.chat_model),
+        )
     with ask_tab:
         render_ask_tab(settings, document, models_ready=report.ok)
     with refs_tab:
-        render_placeholder("Bibliography formatting", 6)
+        render_references_tab(
+            settings,
+            document,
+            chat_model_ready=report.is_model_available(settings.chat_model),
+        )
     with status_tab:
         render_health_details(report, settings)
 
