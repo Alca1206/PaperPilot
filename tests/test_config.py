@@ -206,3 +206,39 @@ def test_qa_settings_from_env():
 def test_invalid_qa_settings_are_rejected(kwargs):
     with pytest.raises(ValueError):
         Settings(**kwargs)
+
+
+
+# ---------- Phase 5: summary settings ----------
+
+
+def test_summary_setting_defaults():
+    settings = load_settings(env={})
+
+    assert settings.summary_num_ctx == 16384
+    assert settings.summary_direct_limit_tokens == 9000
+    assert settings.summary_pages_per_group == 4
+    assert settings.summary_max_attempts == 3
+
+
+def test_summary_settings_from_env():
+    settings = load_settings(
+        env={"PAPERPILOT_SUMMARY_NUM_CTX": "8192", "PAPERPILOT_SUMMARY_DIRECT_LIMIT_TOKENS": "4500"}
+    )
+
+    assert (settings.summary_num_ctx, settings.summary_direct_limit_tokens) == (8192, 4500)
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"summary_num_ctx": 1000},
+        {"summary_direct_limit_tokens": 0},
+        {"summary_direct_limit_tokens": 20000},  # bigger than the 16384 window
+        {"summary_pages_per_group": 0},
+        {"summary_max_attempts": 0},
+    ],
+)
+def test_invalid_summary_settings_are_rejected(kwargs):
+    with pytest.raises(ValueError):
+        Settings(**kwargs)
