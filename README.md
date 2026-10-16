@@ -153,3 +153,12 @@ See [LICENSE](LICENSE).
 | `PAPERPILOT_MODEL_TIMEOUT_SECONDS` | `300` | Timeout for embedding/chat calls (CPU can be slow) |
 | `PAPERPILOT_EMBED_BATCH_SIZE` | `32` | Chunks sent to Ollama per embedding request |
 | `PAPERPILOT_EMBED_USE_PREFIXES` | `true` | EmbeddingGemma task prefixes on queries/documents |
+
+| `PAPERPILOT_QA_TOP_K` | `4` | Passages given to the model per question |
+| `PAPERPILOT_QA_MIN_SCORE` | `0.35` | Below this similarity → "Not found in the paper" without asking the model |
+| `PAPERPILOT_CHAT_TEMPERATURE` | `0.1` | Randomness of answers (low = factual) |
+
+| `PAPERPILOT_SUMMARY_NUM_CTX` | `16384` | Context window for summaries (lower if your GPU is small) |
+| `PAPERPILOT_SUMMARY_DIRECT_LIMIT_TOKENS` | `9000` | Longer papers are summarized with map-reduce |
+| `PAPERPILOT_SUMMARY_PAGES_PER_GROUP` | `4` | Pages per note in map-reduce |
+| `PAPERPILOT_SUMMARY_MAX_ATTEMPTS` | `3` | JSON retries before giving up |
