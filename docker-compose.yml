@@ -1,0 +1,46 @@
+# PaperPilot with Docker Compose.
+#
+# Default: the app container uses the Ollama ALREADY RUNNING on your computer
+#          (fastest, uses your GPU, models are already downloaded).
+#     docker compose up --build
+#
+# Fully containerized: also run Ollama in a container (profile "ollama").
+#     $env:PAPERPILOT_OLLAMA_HOST = "http://ollama:11434"      # PowerShell
+#     docker compose --profile ollama up --build
+#     docker compose exec ollama ollama pull qwen3:8b
+#     docker compose exec ollama ollama pull embeddinggemma
+
+services:
+  app:
+    build: .
+    image: paperpilot:latest
+    ports:
+      - "8501:8501"
+    environment:
+      # host.docker.internal = "the computer running Docker"
+      PAPERPILOT_OLLAMA_HOST: ${PAPERPILOT_OLLAMA_HOST:-http://host.docker.internal:11434}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # needed on Linux; harmless on Windows/macOS
+    volumes:
+      - ./data:/app/data                      # uploads, ChromaDB, exports survive restarts
+    restart: unless-stopped
+
+  ollama:
+    profiles: ["ollama"]                      # only started with --profile ollama
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama           # downloaded models survive restarts
+    restart: unless-stopped
+    # NVIDIA GPU (Docker Desktop + WSL2 + NVIDIA driver). Remove this block for CPU only.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  ollama-models:
