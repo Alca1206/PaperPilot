@@ -1,0 +1,16 @@
+# Keep the image small and free of local/private files
+.venv/
+venv/
+.git/
+data/
+notebooks/
+docs/
+**/__pycache__/
+**/*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.env
+.env.*
+.vscode/
+.idea/
+*.pdf
