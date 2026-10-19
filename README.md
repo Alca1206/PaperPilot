@@ -8,16 +8,13 @@ Everything runs on your own machine: no paid APIs, no data leaves your computer.
 
 **Stack:** Python · Streamlit · Ollama (`qwen3:8b`, `embeddinggemma`) · PyMuPDF · ChromaDB · Pydantic · pytest
 
-> **Status:** Phase 1 (foundation) complete. The app starts and checks that Ollama and
-> the required models are available. PDF upload, Q&A, summaries and references arrive
-> in later phases; see [Roadmap](#roadmap).
 
 ---
 
 ## Requirements
 
 - Windows 10/11 (macOS/Linux work too; adapt the commands)
-- Python 3.11 or 3.12 → check with `py --list`
+- Python 3.14 → check with `py --list`
 - [Ollama](https://ollama.com/download)
 - ~6 GB free disk space for the models
 - 8 GB+ RAM recommended
@@ -27,14 +24,14 @@ Everything runs on your own machine: no paid APIs, no data leaves your computer.
 ### 1. Get the code
 
 ```powershell
-git clone <your-repo-url> PaperPilot
+git clone https://github.com/Alca1206/PaperPilot PaperPilot
 cd PaperPilot
 ```
 
 ### 2. Create and activate a virtual environment
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.14 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
@@ -150,15 +147,3 @@ Later: multi-paper comparison, hybrid retrieval, deployment.
 See [LICENSE](LICENSE).
 
 
-| `PAPERPILOT_MODEL_TIMEOUT_SECONDS` | `300` | Timeout for embedding/chat calls (CPU can be slow) |
-| `PAPERPILOT_EMBED_BATCH_SIZE` | `32` | Chunks sent to Ollama per embedding request |
-| `PAPERPILOT_EMBED_USE_PREFIXES` | `true` | EmbeddingGemma task prefixes on queries/documents |
-
-| `PAPERPILOT_QA_TOP_K` | `4` | Passages given to the model per question |
-| `PAPERPILOT_QA_MIN_SCORE` | `0.35` | Below this similarity → "Not found in the paper" without asking the model |
-| `PAPERPILOT_CHAT_TEMPERATURE` | `0.1` | Randomness of answers (low = factual) |
-
-| `PAPERPILOT_SUMMARY_NUM_CTX` | `16384` | Context window for summaries (lower if your GPU is small) |
-| `PAPERPILOT_SUMMARY_DIRECT_LIMIT_TOKENS` | `9000` | Longer papers are summarized with map-reduce |
-| `PAPERPILOT_SUMMARY_PAGES_PER_GROUP` | `4` | Pages per note in map-reduce |
-| `PAPERPILOT_SUMMARY_MAX_ATTEMPTS` | `3` | JSON retries before giving up |
