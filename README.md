@@ -214,9 +214,6 @@ PaperPilot/
 - [x] Phase 5: structured summaries (map-reduce for long papers)
 - [x] Phase 6: metadata extraction and citation formatting
 - [x] Docker support
-- [ ] Save summaries and references to disk
-- [ ] Multi-paper library and comparison (similarities, limitations, cross-paper Q&A)
-- [ ] Calibrate the relevance threshold on real questions
 
 ---
 
